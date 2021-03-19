@@ -21,5 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group([
     'namespace' => 'App\Http\Controllers\Api'
 ], function () {
-    Route::post('/register', 'RegistrasionController@register');
+    Route::post('/register', 'RegistrationController@register');
+    Route::get('/list', 'RegistrationController@getRegistrations');
+    Route::post('/update/{id}', 'RegistrationController@update');
+    Route::delete('/delete/{id}', 'RegistrationController@delete');
 });

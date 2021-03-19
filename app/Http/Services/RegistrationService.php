@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Helper;
 use App\Http\Repositories\RegistrationRepository;
 use Intervention\Image\Facades\Image as Image;
 use Illuminate\Http\JsonResponse;
@@ -15,11 +16,11 @@ class RegistrationService
         $this->registrationRepository = $registrationRepository;
     }
 
-    public function saveRegistrationData($data) {
+    public function registerOrUpdate($data) {
         $cal_end_time = \Helper::calculateDurationTime($data);
         $data['end_date'] = $cal_end_time['end_date'];
         $data['end_time'] = $cal_end_time['end_time'];
-
+        $data['course_start_time'] = $cal_end_time['start_time'];
         $file = $data['file'];
         if($file) {
             $file_extension = $file->getClientOriginalExtension();
@@ -28,7 +29,15 @@ class RegistrationService
             $data['avatar'] = $name;
         }
 
-        if ($registrasion = $this->registrationRepository->save($data)) {
+        $registration = null;
+
+        if (isset($data['edit'])) {
+            $registration = $this->registrationRepository->edit($data);
+        } else {
+            $registration = $this->registrationRepository->save($data);
+        }
+
+        if ($registration) {
             if($data['avatar']) {
                 if (!file_exists(public_path('upload/user/avatar/'))) {
                     mkdir(public_path('upload/user/avatar'), 0777, true);
@@ -36,13 +45,28 @@ class RegistrationService
                 Image::make($file)->save(public_path('upload/user/avatar/').$data['avatar']);
             }
 
+            \Helper::sendRegistrationMail($data);
             return response()->json([
                 'message' => 'success',
-                'registration' => $registrasion
+                'registration' => $registration
             ], JsonResponse::HTTP_OK);
         } else {
 
             return response()->json(['errors' => 'error server'], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function getRegistrations($data) {
+        return $this->registrationRepository->getAll($data);
+    }
+
+    public function deleteRegistration($id) {
+        if ($this->registrationRepository->delete($id)) {
+            return response()->json([
+                'message' => 'delete success',
+            ], JsonResponse::HTTP_OK);
+        } else {
+            return response()->json(['errors' => 'error server'], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        };
     }
 }

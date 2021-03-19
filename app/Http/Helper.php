@@ -6,7 +6,9 @@ use App\Models\Duration;
 use App\Models\StartTime;
 use App\Enums\DurationEnum;
 use App\Models\LearningHour;
+use App\Models\Course;
 use Carbon\Carbon;
+use Mail;
 
 class Helper
 {
@@ -43,8 +45,18 @@ class Helper
         }
 
         return [
+            'start_time' => $start_time['time'],
+            'start_date' => $param['start_date'],
             'end_date' => $end_date_time->format('Y/m/d'),
             'end_time' => $end_date_time->format('H:i')
         ];
+    }
+
+    public static function sendRegistrationMail($data) {
+        $data['course_name'] = Course::where('id', $data['course'])->first()['name'];
+        $beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
+        $beautymail->send('emails.registration', $data, function($message) use ($data){
+	        $message->from(config('mail.mailers.smtp.username'))->to($data['email'], 'Course Admin')->subject('Registration Mail!');
+	    });
     }
 }

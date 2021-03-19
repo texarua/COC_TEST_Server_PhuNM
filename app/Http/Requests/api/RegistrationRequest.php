@@ -25,7 +25,7 @@ class RegistrationRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules =  [
             'name'=>'required|max:191',
             'dob' => 'required|date_format:Y/m/d',
             'address'=>'required',
@@ -38,6 +38,11 @@ class RegistrationRequest extends FormRequest
             'avatar' => 'required|image|mimes:png,jpg|max:2048',
             'start_date' => 'required|date_format:Y/m/d',
         ];
+        if ($this->get('edit') == true) {
+            unset($rules['email'] );
+        }
+
+        return $rules;
     }
 
     public function messages()

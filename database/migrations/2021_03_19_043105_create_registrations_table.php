@@ -33,6 +33,7 @@ class CreateRegistrationsTable extends Migration
             $table->string('avatar');
             $table->date('end_date');
             $table->string('end_time');
+            $table->boolean('enabled')->default(1);
             $table->timestamps();
         });
     }
