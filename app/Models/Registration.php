@@ -9,7 +9,7 @@ use App\Models\Duration;
 use App\Models\Course;
 use App\Models\LearningHour;
 
-class Registrasion extends Model
+class Registration extends Model
 {
     use HasFactory;
 

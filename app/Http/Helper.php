@@ -53,6 +53,8 @@ class Helper
     }
 
     public static function sendRegistrationMail($data) {
+        \Log::info(collect($data)->toArray());
+        $data = collect($data)->toArray();
         $data['course_name'] = Course::where('id', $data['course'])->first()['name'];
         $beautymail = app()->make(\Snowfire\Beautymail\Beautymail::class);
         $beautymail->send('emails.registration', $data, function($message) use ($data){

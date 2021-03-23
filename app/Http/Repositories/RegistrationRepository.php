@@ -2,13 +2,13 @@
 
 namespace App\Http\Repositories;
 
-use App\Models\Registrasion;
+use App\Models\Registration;
 
 class RegistrationRepository
 {
     protected $registration;
 
-    public function __construct(Registrasion $registration)
+    public function __construct(Registration $registration)
     {
         $this->registration = $registration;
     }
@@ -31,10 +31,11 @@ class RegistrationRepository
         if ($this->registration->where('id', $data['id'])->update($data)) {
             return $data;
         };
+        return [];
     }
 
     public function getAll($data) {
-        $registrations = Registrasion::with('start_time', 'course', 'duration', 'learning_hour')
+        $registrations = Registration::with('start_time', 'course', 'duration', 'learning_hour')
                         ->where('enabled', 1);
         if(isset($data['field']) && isset($data['sort'])) {
             $registrations = $registrations->orderBy($data['field'], $data['sort']);

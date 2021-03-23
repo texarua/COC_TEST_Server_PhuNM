@@ -17,10 +17,7 @@ class RegistrationService
     }
 
     public function registerOrUpdate($data) {
-        $cal_end_time = \Helper::calculateDurationTime($data);
-        $data['end_date'] = $cal_end_time['end_date'];
-        $data['end_time'] = $cal_end_time['end_time'];
-        $data['course_start_time'] = $cal_end_time['start_time'];
+
         $file = $data['file'];
         if($file) {
             $file_extension = $file->getClientOriginalExtension();
@@ -44,8 +41,7 @@ class RegistrationService
                 }
                 Image::make($file)->save(public_path('upload/user/avatar/').$data['avatar']);
             }
-
-            \Helper::sendRegistrationMail($data);
+            
             return response()->json([
                 'message' => 'success',
                 'registration' => $registration
