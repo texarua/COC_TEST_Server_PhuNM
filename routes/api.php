@@ -14,15 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 
 Route::group([
     'namespace' => 'App\Http\Controllers\Api'
 ], function () {
-    Route::post('/register', 'RegistrationController@register');
-    Route::get('/list', 'RegistrationController@getRegistrations');
-    Route::post('/update/{id}', 'RegistrationController@update');
-    Route::delete('/delete/{id}', 'RegistrationController@delete');
+
+    // member
+	Route::post('/login', 'UserController@login');
+    Route::post('/register-user', 'UserController@register');
+    Route::group([
+        'middleware' => 'jwt.auth'
+    ], function () {
+        Route::post('/register', 'RegistrationController@register');
+        Route::get('/list', 'RegistrationController@getRegistrations');
+        Route::post('/update/{id}', 'RegistrationController@update');
+        Route::delete('/delete/{id}', 'RegistrationController@delete');
+    });
 });
